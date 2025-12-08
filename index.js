@@ -92,8 +92,8 @@ app.post("/contact", async (req, res) => {
         // -------------------------//
         const adminMail = {
             from: `"ITRF (Global) Ltd" <${process.env.SMTP_USER}>`,
-            to: ["darshandumaraliya@gmail.com"],
-            // to: ["arif@itrfg.com", "arif.shaik@hotmail.co.uk"],
+            // to: ["darshandumaraliya@gmail.com"],
+            to: ["arif@itrfg.com", "arif.shaik@hotmail.co.uk"],
             subject: "New Contact Form Submission Received",
             text: `
 Hi Arif,
