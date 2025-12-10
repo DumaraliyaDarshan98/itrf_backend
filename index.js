@@ -75,46 +75,46 @@ async function sendEmailsInBackground(emailData) {
         // -------------------------//
         const adminMail = {
             from: `"ITRF (Global) Ltd" <${process.env.SMTP_USER}>`,
-            to: ["darshandumaraliya@gmail.com"],
-            // to: ["arif@itrfg.com", "arif.shaik@hotmail.co.uk"],
+            // to: ["darshandumaraliya@gmail.com"],
+            to: ["arif@itrfg.com", "arif.shaik@hotmail.co.uk"],
             subject: "New Contact Form Submission Received",
             text: `
-Hi Arif,
+                Hi Arif,
 
-A new enquiry has been submitted through the ITRF (Global) Ltd website.
+                A new enquiry has been submitted through the ITRF (Global) Ltd website.
 
-Please find the details below:
-Name: ${emailData.firstName} ${emailData.lastName}
-Country: ${emailData.country || "Not provided"}
-Email: ${emailData.email}
-Organisation: ${emailData.organisation || "Not provided"}
-I am looking for: ${emailData.lookingFor}
-Message:
-${emailData.message}
+                Please find the details below:
+                Name: ${emailData.firstName} ${emailData.lastName}
+                Country: ${emailData.country || "Not provided"}
+                Email: ${emailData.email}
+                Organisation: ${emailData.organisation || "Not provided"}
+                I am looking for: ${emailData.lookingFor}
+                Message:
+                ${emailData.message}
 
-Please review and follow up as required.
+                Please review and follow up as required.
 
-Thanks,
-ITRF (Global) Ltd – Web Notifications
+                Thanks,
+                ITRF (Global) Ltd – Web Notifications
             `,
             html: `
-<p>Hi Arif,</p>
-<p>A new enquiry has been submitted through the <b>ITRF (Global) Ltd</b> website.</p>
+                <p>Hi Arif,</p>
+                <p>A new enquiry has been submitted through the <b>ITRF (Global) Ltd</b> website.</p>
 
-<p>Please find the details below:</p>
-<ul>
-<li><b>Name:</b> ${emailData.firstName} ${emailData.lastName}</li>
-<li><b>Country:</b> ${emailData.country || "Not provided"}</li>
-<li><b>Email:</b> ${emailData.email}</li>
-<li><b>Organisation:</b> ${emailData.organisation || "Not provided"}</li>
-<li><b>I am looking for:</b> ${emailData.lookingFor}</li>
-<li><b>Message:</b><br>${emailData.message.replace(/\n/g, "<br>")}</li>
-</ul>
+                <p>Please find the details below:</p>
+                <ul>
+                <li><b>Name:</b> ${emailData.firstName} ${emailData.lastName}</li>
+                <li><b>Country:</b> ${emailData.country || "Not provided"}</li>
+                <li><b>Email:</b> ${emailData.email}</li>
+                <li><b>Organisation:</b> ${emailData.organisation || "Not provided"}</li>
+                <li><b>I am looking for:</b> ${emailData.lookingFor}</li>
+                <li><b>Message:</b><br>${emailData.message.replace(/\n/g, "<br>")}</li>
+                </ul>
 
-<p>Please review and follow up as required.</p>
+                <p>Please review and follow up as required.</p>
 
-<p>Thanks,<br>
-ITRF (Global) Ltd – Web Notifications</p>
+                <p>Thanks,<br>
+                ITRF (Global) Ltd – Web Notifications</p>
             `,
         };
 
@@ -129,30 +129,30 @@ ITRF (Global) Ltd – Web Notifications</p>
             to: emailData.email,
             subject: "Thank You for Reaching Out to ITRF (Global) Ltd",
             text: `
-Hi ${emailData.firstName},
+                Hi ${emailData.firstName},
 
-Thanks for reaching out. I'll look into your message soon and get back to you as soon as I can — usually within five business days.
+                Thanks for reaching out. I'll look into your message soon and get back to you as soon as I can — usually within five business days.
 
-Since I'm connected with plenty of people and projects, there might be a bit of delay, but don't worry, it just means my head is full, not that I'm running around somewhere! 😄
+                Since I'm connected with plenty of people and projects, there might be a bit of delay, but don't worry, it just means my head is full, not that I'm running around somewhere! 😄
 
-I'll reply as soon as I get a clear window to give your note the proper attention it deserves.
+                I'll reply as soon as I get a clear window to give your note the proper attention it deserves.
 
-Talk soon,  
-Arif Shaik  
-ITRF (Global) Ltd
+                Talk soon,  
+                Arif Shaik  
+                ITRF (Global) Ltd
             `,
             html: `
-<p>Hi ${emailData.firstName},</p>
+                <p>Hi ${emailData.firstName},</p>
 
-<p>Thanks for reaching out. I'll look into your message soon and get back to you as soon as I can — usually within five business days.</p>
+                <p>Thanks for reaching out. I'll look into your message soon and get back to you as soon as I can — usually within five business days.</p>
 
-<p>Since I'm connected with plenty of people and projects, there might be a bit of delay, but don't worry, it just means my head is full, not that I'm running around somewhere! 😄</p>
+                <p>Since I'm connected with plenty of people and projects, there might be a bit of delay, but don't worry, it just means my head is full, not that I'm running around somewhere! 😄</p>
 
-<p>I'll reply as soon as I get a clear window to give your note the proper attention it deserves.</p>
+                <p>I'll reply as soon as I get a clear window to give your note the proper attention it deserves.</p>
 
-<p>Talk soon,<br>
-<b>Arif Shaik</b><br>
-ITRF (Global) Ltd</p>
+                <p>Talk soon,<br>
+                <b>Arif Shaik</b><br>
+                ITRF (Global) Ltd</p>
             `,
         };
 
