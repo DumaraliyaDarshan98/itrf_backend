@@ -67,7 +67,151 @@ app.options("/contact", (req, res) => {
 });
 
 // API route to send mail
-// API route to handle contact form
+// Helper function to send emails in the background
+async function sendEmailsInBackground(emailData) {
+    try {
+        // -------------------------//
+        // 1) MAIL TO ARIF (ADMIN)
+        // -------------------------//
+        const adminMail = {
+            from: `"ITRF (Global) Ltd" <${process.env.SMTP_USER}>`,
+            to: ["darshandumaraliya@gmail.com"],
+            // to: ["arif@itrfg.com", "arif.shaik@hotmail.co.uk"],
+            subject: "New Contact Form Submission Received",
+            text: `
+Hi Arif,
+
+A new enquiry has been submitted through the ITRF (Global) Ltd website.
+
+Please find the details below:
+Name: ${emailData.firstName} ${emailData.lastName}
+Country: ${emailData.country || "Not provided"}
+Email: ${emailData.email}
+Organisation: ${emailData.organisation || "Not provided"}
+I am looking for: ${emailData.lookingFor}
+Message:
+${emailData.message}
+
+Please review and follow up as required.
+
+Thanks,
+ITRF (Global) Ltd – Web Notifications
+            `,
+            html: `
+<p>Hi Arif,</p>
+<p>A new enquiry has been submitted through the <b>ITRF (Global) Ltd</b> website.</p>
+
+<p>Please find the details below:</p>
+<ul>
+<li><b>Name:</b> ${emailData.firstName} ${emailData.lastName}</li>
+<li><b>Country:</b> ${emailData.country || "Not provided"}</li>
+<li><b>Email:</b> ${emailData.email}</li>
+<li><b>Organisation:</b> ${emailData.organisation || "Not provided"}</li>
+<li><b>I am looking for:</b> ${emailData.lookingFor}</li>
+<li><b>Message:</b><br>${emailData.message.replace(/\n/g, "<br>")}</li>
+</ul>
+
+<p>Please review and follow up as required.</p>
+
+<p>Thanks,<br>
+ITRF (Global) Ltd – Web Notifications</p>
+            `,
+        };
+
+        await transporter.sendMail(adminMail);
+        console.log("Admin email sent successfully");
+
+        // -------------------------//
+        // 2) THANK YOU MAIL TO USER
+        // -------------------------//
+        const userMail = {
+            from: `"ITRF (Global) Ltd" <${process.env.SMTP_USER}>`,
+            to: emailData.email,
+            subject: "Thank You for Reaching Out to ITRF (Global) Ltd",
+            text: `
+Hi ${emailData.firstName},
+
+Thanks for reaching out. I'll look into your message soon and get back to you as soon as I can — usually within five business days.
+
+Since I'm connected with plenty of people and projects, there might be a bit of delay, but don't worry, it just means my head is full, not that I'm running around somewhere! 😄
+
+I'll reply as soon as I get a clear window to give your note the proper attention it deserves.
+
+Talk soon,  
+Arif Shaik  
+ITRF (Global) Ltd
+            `,
+            html: `
+<p>Hi ${emailData.firstName},</p>
+
+<p>Thanks for reaching out. I'll look into your message soon and get back to you as soon as I can — usually within five business days.</p>
+
+<p>Since I'm connected with plenty of people and projects, there might be a bit of delay, but don't worry, it just means my head is full, not that I'm running around somewhere! 😄</p>
+
+<p>I'll reply as soon as I get a clear window to give your note the proper attention it deserves.</p>
+
+<p>Talk soon,<br>
+<b>Arif Shaik</b><br>
+ITRF (Global) Ltd</p>
+            `,
+        };
+
+        await transporter.sendMail(userMail);
+        console.log("User email sent successfully");
+    } catch (err) {
+        console.error("Background email send error:", err);
+        // Error is logged but doesn't affect the API response
+    }
+}
+
+/**
+ * POST /contact
+ * 
+ * Contact Form API Endpoint
+ * 
+ * Submits a contact form and sends emails in the background.
+ * The API responds immediately with a success message, and emails are sent asynchronously.
+ * 
+ * @route POST /contact
+ * @body {string} firstName - User's first name (required)
+ * @body {string} lastName - User's last name (optional)
+ * @body {string} email - User's email address (required)
+ * @body {string} country - User's country (optional)
+ * @body {string} organisation - User's organization/company (optional)
+ * @body {string} lookingFor - What the user is looking for (optional)
+ * @body {string} message - User's message/inquiry (optional)
+ * 
+ * @example
+ * // Request Payload:
+ * {
+ *   "firstName": "John",
+ *   "lastName": "Doe",
+ *   "email": "johndoe@example.com",
+ *   "country": "United Kingdom",
+ *   "organisation": "ABC Pvt Ltd",
+ *   "lookingFor": "Web Development Services",
+ *   "message": "I'd like to discuss a new project."
+ * }
+ * 
+ * @example
+ * // Minimal Payload (only required fields):
+ * {
+ *   "firstName": "John",
+ *   "email": "johndoe@example.com"
+ * }
+ * 
+ * @returns {Object} 200 - Success response
+ * @returns {boolean} success - true
+ * @returns {string} message - Success message
+ * 
+ * @returns {Object} 400 - Bad request (missing required fields)
+ * @returns {boolean} success - false
+ * @returns {string} error - Error message
+ * 
+ * @returns {Object} 500 - Server error
+ * @returns {boolean} success - false
+ * @returns {string} error - Error message
+ */
 app.post("/contact", async (req, res) => {
     try {
         const {
@@ -87,99 +231,26 @@ app.post("/contact", async (req, res) => {
             });
         }
 
-        // -------------------------//
-        // 1) MAIL TO ARIF (ADMIN)
-        // -------------------------//
-        const adminMail = {
-            from: `"ITRF (Global) Ltd" <${process.env.SMTP_USER}>`,
-            // to: ["darshandumaraliya@gmail.com"],
-            to: ["arif@itrfg.com", "arif.shaik@hotmail.co.uk"],
-            subject: "New Contact Form Submission Received",
-            text: `
-Hi Arif,
+        // Send success response immediately
+        res.json({ success: true, message: "Contact form submitted successfully. Emails will be sent shortly." });
 
-A new enquiry has been submitted through the ITRF (Global) Ltd website.
-
-Please find the details below:
-Name: ${firstName} ${lastName}
-Country: ${country || "Not provided"}
-Email: ${email}
-Organisation: ${organisation || "Not provided"}
-I am looking for: ${lookingFor}
-Message:
-${message}
-
-Please review and follow up as required.
-
-Thanks,
-ITRF (Global) Ltd – Web Notifications
-            `,
-            html: `
-<p>Hi Arif,</p>
-<p>A new enquiry has been submitted through the <b>ITRF (Global) Ltd</b> website.</p>
-
-<p>Please find the details below:</p>
-<ul>
-<li><b>Name:</b> ${firstName} ${lastName}</li>
-<li><b>Country:</b> ${country || "Not provided"}</li>
-<li><b>Email:</b> ${email}</li>
-<li><b>Organisation:</b> ${organisation || "Not provided"}</li>
-<li><b>I am looking for:</b> ${lookingFor}</li>
-<li><b>Message:</b><br>${message.replace(/\n/g, "<br>")}</li>
-</ul>
-
-<p>Please review and follow up as required.</p>
-
-<p>Thanks,<br>
-ITRF (Global) Ltd – Web Notifications</p>
-            `,
-        };
-
-        await transporter.sendMail(adminMail);
-
-        // -------------------------//
-        // 2) THANK YOU MAIL TO USER
-        // -------------------------//
-        const userMail = {
-            from: `"ITRF (Global) Ltd" <${process.env.SMTP_USER}>`,
-            to: email,
-            subject: "Thank You for Reaching Out to ITRF (Global) Ltd",
-            text: `
-Hi ${firstName},
-
-Thanks for reaching out. I’ll look into your message soon and get back to you as soon as I can — usually within five business days.
-
-Since I’m connected with plenty of people and projects, there might be a bit of delay, but don’t worry, it just means my head is full, not that I’m running around somewhere! 😄
-
-I’ll reply as soon as I get a clear window to give your note the proper attention it deserves.
-
-Talk soon,  
-Arif Shaik  
-ITRF (Global) Ltd
-            `,
-            html: `
-<p>Hi ${firstName},</p>
-
-<p>Thanks for reaching out. I’ll look into your message soon and get back to you as soon as I can — usually within five business days.</p>
-
-<p>Since I’m connected with plenty of people and projects, there might be a bit of delay, but don’t worry, it just means my head is full, not that I’m running around somewhere! 😄</p>
-
-<p>I’ll reply as soon as I get a clear window to give your note the proper attention it deserves.</p>
-
-<p>Talk soon,<br>
-<b>Arif Shaik</b><br>
-ITRF (Global) Ltd</p>
-            `,
-        };
-
-        await transporter.sendMail(userMail);
-
-        res.json({ success: true, message: "Email sent successfully" });
+        // Send emails in the background (fire and forget)
+        sendEmailsInBackground({
+            firstName,
+            lastName,
+            email,
+            country,
+            organisation,
+            lookingFor,
+            message,
+        }).catch(err => {
+            console.error("Unhandled error in background email sending:", err);
+        });
     } catch (err) {
-        console.error("Email send error:", err);
+        console.error("Contact form error:", err);
         res.status(500).json({
             success: false,
-            error: "Failed to send email",
+            error: "Failed to process contact form",
         });
     }
 });
